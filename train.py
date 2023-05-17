@@ -9,7 +9,7 @@ import cv2
 import numpy as np
 import torch
 from model import DeepCapsModel
-from load_data import FashionMNIST, Cifar10
+from load_data import FashionMNIST, Cifar10, Jamones
 from helpers import onehot_encode, accuracy_calc, get_learning_rate
 from plot import plot_loss_acc, plot_reconstruction
 import cfg
