@@ -15,7 +15,7 @@ DECAY_STEP = 20
 DECAY_GAMMA = 0.95
 CHECKPOINT_FOLDER = './saved_model/'
 CHECKPOINT_NAME = 'deepcaps.pth'
-DATASET_FOLDER = './dataset_folder/'
+DATASET_FOLDER = './data/'
 GRAPHS_FOLDER = './graphs/'
 DEVICE = helpers.get_device()
 
