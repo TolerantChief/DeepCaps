@@ -155,7 +155,7 @@ def train(img_size, device=torch.device('cpu'), learning_rate=1e-3, num_epochs=5
                 print(f'The best test accuracy was {best_test_acc} in epoch {best_epoch}')
                 print('max. memory usage: ', max_memory_usage)
 
-                epochs = range(1, epoch_idx + 1)
+                epochs = range(1, epoch_idx + 2)
                             
                 plt.figure()
                 
