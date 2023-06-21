@@ -13,6 +13,9 @@ from load_data import FashionMNIST, Cifar10, Jamones
 from helpers import onehot_encode, accuracy_calc, get_learning_rate
 from plot import plot_loss_acc, plot_reconstruction
 import cfg
+from torchbearer.callbacks import EarlyStopping
+from mem_profile import get_gpu_memory_map
+import matplotlib.pyplot as plt
 
 
 
@@ -43,6 +46,11 @@ def train(img_size, device=torch.device('cpu'), learning_rate=1e-3, num_epochs=5
     # lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=decay_step, gamma=gamma)
 
     best_accuracy = 0
+    best_test_acc = 0
+    early_stopping = EarlyStopping(patience=10)
+    best_epoch = 0
+    epochs_no_improve = 0
+    max_memory_usage = 0
 
     training_loss_list = []
     training_acc_list = []
@@ -105,6 +113,11 @@ def train(img_size, device=torch.device('cpu'), learning_rate=1e-3, num_epochs=5
 
 
 
+        # check memory usage
+        current_memory_usage = get_gpu_memory_map()[0]
+        if current_memory_usage > max_memory_usage:
+            max_memory_usage = current_memory_usage
+
         epoch_accuracy = batch_accuracy/(batch_idx+1)
         avg_batch_loss = batch_loss/(batch_idx+1)
         print(f"Epoch : {epoch_idx}, Testing Accuracy : {epoch_accuracy}, Testing Loss : {avg_batch_loss}")
@@ -127,6 +140,48 @@ def train(img_size, device=torch.device('cpu'), learning_rate=1e-3, num_epochs=5
 
             torch.save(deepcaps.state_dict(), checkpoint_path)
             print("Saved model at epoch %d"%(epoch_idx))
+
+        if epoch_accuracy > best_test_acc:
+            best_test_acc = epoch_accuracy
+            best_epoch = epoch_idx
+        else:
+            epochs_no_improve += 1
+            if epochs_no_improve == early_stopping.patience:
+                print('Early Stopping')
+                print(f'The best test accuracy was {best_test_acc} in epoch {best_epoch}')
+                print('max. memory usage: ', max_memory_usage)
+
+                epochs = range(1, epoch_idx + 1)
+                            
+                plt.figure()
+                
+                # plt.subplot(2, 1, 1)
+                
+                plt.plot(epochs, training_acc_list, label='Training Accuracy')
+                plt.plot(epochs, testing_acc_list, label='Validation Accuracy')
+                plt.xlabel('Epochs')
+                plt.ylabel('Accuracy')
+                plt.title('Training and Validation Accuracy')
+                plt.legend()
+                plt.tight_layout()
+                plt.savefig('accuracy.png')
+                
+                # plt.subplot(2,1,2)
+                
+                plt.figure()
+                plt.plot(epochs, training_loss_list, label='Training Loss')
+                plt.plot(epochs, testing_loss_list, label='Validation Loss')
+                plt.xlabel('Epochs')
+                plt.ylabel('Loss')
+                plt.title('Training and Validation Loss')
+                plt.legend()
+                
+                plt.tight_layout()
+                # plt.show()    
+
+                plt.savefig('loss.png')
+                
+                return
 
 
 
