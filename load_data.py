@@ -24,6 +24,7 @@ class Jamones:
 
     def __call__(self):
 
+        mean, std = ((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
         transform = transforms.Compose([
         # shift by 2 pixels in either direction with zero padding.
         transforms.Grayscale(),
@@ -37,11 +38,11 @@ class Jamones:
         transforms.RandomRotation(10),
         transforms.RandomCrop(self.img_size, padding=2),
         transforms.ToTensor(),
-        #transforms.Normalize(mean, std)
+        transforms.Normalize(mean, std)
     ])
 
         test_size = 0.2
-        dataset = torchvision.datasets.ImageFolder(root=os.path.join(self.data_path, 'JAMONES'), transform=transform)
+        dataset = torchvision.datasets.ImageFolder(root=os.path.join(self.data_path, 'JAMONES_CROPPED'), transform=transform)
         num_data = len(dataset)
         num_test = int(test_size * num_data)
         num_train = num_data - num_test
