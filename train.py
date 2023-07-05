@@ -17,6 +17,7 @@ from torchbearer.callbacks import EarlyStopping
 from mem_profile import get_gpu_memory_map
 import matplotlib.pyplot as plt
 from numpy import prod
+from ranger21 import Ranger21
 
 
 
@@ -46,7 +47,8 @@ def train(img_size, device=torch.device('cpu'), learning_rate=1e-3, num_epochs=5
             print(e)
             sys.exit()
 
-    optimizer = torch.optim.Adam(deepcaps.parameters(), lr=learning_rate)
+    # optimizer = torch.optim.Adam(deepcaps.parameters(), lr=learning_rate)
+    optimizer = Ranger21(deepcaps.parameters(), lr=learning_rate)
     # lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=decay_step, gamma=gamma)
 
     best_accuracy = 0
